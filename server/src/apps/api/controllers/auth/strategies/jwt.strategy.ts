@@ -8,12 +8,17 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { Utilizator } from 'src/libs/entities/utilizatori/utilizator.entity';
+import {
+  RolUtilizator,
+  Utilizator,
+} from 'src/libs/entities/utilizatori/utilizator.entity';
 dotenv.config();
 
 export type JwtPayload = {
   sub: number;
   email: string;
+  avatar: string;
+  rol: RolUtilizator;
 };
 
 @Injectable()
@@ -43,12 +48,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
 
     if (!utilizator) {
-      throw new UnauthorizedException('Please log in to continue');
+      throw new UnauthorizedException('Este necesara autentificarea');
     }
 
     return {
       id: payload.sub,
       email: payload.email,
+      avatar: payload.avatar,
+      rol: payload.rol,
     };
   }
 }

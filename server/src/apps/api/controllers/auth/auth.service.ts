@@ -8,7 +8,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUtilizatorDTO } from 'src/libs/dto/utilizatori/utilizator.dto';
-import { Utilizator } from 'src/libs/entities/utilizatori/utilizator.entity';
+import {
+  RolUtilizator,
+  Utilizator,
+} from 'src/libs/entities/utilizatori/utilizator.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -37,26 +40,36 @@ export class AuthService {
     return this.generateJwt({
       sub: utilizatorExista.idUtilizator,
       email: utilizatorExista.email,
+      avatar: utilizatorExista.avatar,
     });
   }
 
   async registerUser(utilizator: CreateUtilizatorDTO) {
     try {
-      console.log('Registering user:', utilizator);
-
       const utilizatorNou = this.utilizatorRepository.create({
         ...utilizator,
         comenzi: [],
       });
+      console.log('EMAIL_ADMIN:', process.env.EMAIL_ADMIN);
+      console.log('New user email:', utilizatorNou.email);
+
+      if (utilizatorNou.email === process.env.EMAIL_ADMIN) {
+        utilizatorNou.rolUtilizator = RolUtilizator.ADMIN;
+      } else {
+        utilizatorNou.rolUtilizator = RolUtilizator.CLIENT;
+      }
+
+      console.log(utilizatorNou.rolUtilizator);
 
       await this.utilizatorRepository.save(utilizatorNou);
 
       return this.generateJwt({
         sub: utilizatorNou.idUtilizator,
         email: utilizatorNou.email,
+        avatar: utilizatorNou.avatar,
       });
     } catch (error) {
-      console.error('User registration failed:', error);
+      console.error('Inregistrare nereusita:', error);
       throw new InternalServerErrorException();
     }
   }

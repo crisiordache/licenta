@@ -1,12 +1,11 @@
-import React from "react";
 import "./App.css";
+import AppBarConditional from "./components/login/AppBar";
 import ListaEvenimente from "./components/paginaPrincipala/ListaEvenimente";
-import ButonLoginGoogle from "./components/login/ButonLoginGoogle";
 
 function App() {
   return (
     <div className="App">
-      <ButonLoginGoogle></ButonLoginGoogle>
+      <AppBarConditional></AppBarConditional>
       <ListaEvenimente></ListaEvenimente>
     </div>
   );

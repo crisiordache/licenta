@@ -3,6 +3,8 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RequestUtilizator } from 'src/types/requestUtilizator';
 
 @Controller('auth')
 export class AuthController {
@@ -25,5 +27,20 @@ export class AuthController {
     });
 
     return res.redirect('http://localhost:3000');
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Req() req: RequestUtilizator) {
+    return req.user;
+  }
+
+  @Get('logout')
+  logout(@Res() res: Response) {
+    res.clearCookie('access_token', {
+      sameSite: true,
+      secure: false,
+    });
+    return res.status(200).json({ message: 'Signed out successfully' });
   }
 }

@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateEvenimentDTO } from 'src/libs/dto/evenimente/eveniment.dto';
 import { Eveniment } from 'src/libs/entities/evenimente/eveniment.entity';
 import { EvenimenteService } from 'src/libs/repositories/evenimente/eveniment.service';
+import { Roluri } from '../auth/decorators/roluri.decorator';
+import { RolUtilizator } from 'src/libs/entities/utilizatori/utilizator.entity';
 
 @Controller('evenimente')
 export class EvenimenteController {
@@ -17,6 +19,7 @@ export class EvenimenteController {
     return this.evenimenteService.findOne(+id);
   }
 
+  @Roluri(RolUtilizator.ADMIN)
   @Post()
   create(@Body() dto: CreateEvenimentDTO): Promise<Eveniment> {
     return this.evenimenteService.create(dto);

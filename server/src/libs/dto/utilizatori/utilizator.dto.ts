@@ -1,3 +1,4 @@
+import { RolUtilizator } from 'src/libs/entities/utilizatori/utilizator.entity';
 import { ComandaDTO } from '../comenzi/comanda.dto';
 
 export class UtilizatorDTO {
@@ -7,6 +8,7 @@ export class UtilizatorDTO {
   email: string;
   googleId: string;
   avatar: string;
+  rolUtilizator: RolUtilizator;
   comenzi: ComandaDTO[];
 }
 
@@ -16,4 +18,5 @@ export class CreateUtilizatorDTO {
   email: string;
   googleId: string;
   avatar?: string;
+  rolUtilizator: RolUtilizator;
 }
