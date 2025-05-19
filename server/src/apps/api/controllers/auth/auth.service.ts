@@ -41,6 +41,7 @@ export class AuthService {
       sub: utilizatorExista.idUtilizator,
       email: utilizatorExista.email,
       avatar: utilizatorExista.avatar,
+      rol: utilizatorExista.rolUtilizator,
     });
   }
 
@@ -67,6 +68,7 @@ export class AuthService {
         sub: utilizatorNou.idUtilizator,
         email: utilizatorNou.email,
         avatar: utilizatorNou.avatar,
+        rol: utilizatorNou.rolUtilizator,
       });
     } catch (error) {
       console.error('Inregistrare nereusita:', error);
