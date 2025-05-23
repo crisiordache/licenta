@@ -1,12 +1,14 @@
 export class LocDTO {
   idLoc: number;
-  rand: number;
+  rand: string;
   numarLoc: number;
-  esteRezervat: boolean;
+  x: number;
+  y: number;
 }
 
 export class CreateLocDTO {
-  rand: number;
-  numarLoc: number;
-  esteRezervat: boolean;
+  rand: string;
+  numar: number;
+  x: number;
+  y: number;
 }

@@ -11,6 +11,9 @@ import { Loc } from './libs/entities/locuri/loc.entity';
 import { Sala } from './libs/entities/sali/sala.entity';
 import { TipBilet } from './libs/entities/tipuriBilet/tipBilet.entity';
 import { AuthModule } from './apps/api/controllers/auth/auth.module';
+import { SaliModule } from './libs/repositories/sali/sala.module';
+import { EvenimenteModule } from './libs/repositories/evenimente/eveniment.module';
+import { LocuriModule } from './libs/repositories/locuri/loc.module';
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import { AuthModule } from './apps/api/controllers/auth/auth.module';
       }),
     }),
     AuthModule,
+    SaliModule,
+    EvenimenteModule,
+    LocuriModule,
   ],
   controllers: [AppController],
   providers: [AppService],

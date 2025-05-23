@@ -1,7 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Comanda } from '../comenzi/comanda.entity';
 import { Eveniment } from '../evenimente/eveniment.entity';
 import { TipBilet } from '../tipuriBilet/tipBilet.entity';
+import { Loc } from '../locuri/loc.entity';
 
 @Entity()
 export class Bilet {
@@ -19,4 +26,7 @@ export class Bilet {
 
   @ManyToOne(() => TipBilet, (tipBilet) => tipBilet.bilete)
   tipBilet: TipBilet;
+
+  @OneToMany(() => Loc, (loc) => loc.bilete)
+  loc: Loc;
 }

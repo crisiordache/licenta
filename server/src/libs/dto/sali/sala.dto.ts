@@ -5,6 +5,7 @@ export class SalaDTO {
   numeSala: string;
   adresa: string;
   capacitate: number;
+  structura: string;
   evenimente: EvenimentDTO[];
 }
 
@@ -12,4 +13,5 @@ export class CreateSalaDTO {
   numeSala: string;
   adresa: string;
   capacitate: number;
+  structura: string;
 }

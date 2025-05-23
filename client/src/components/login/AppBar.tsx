@@ -6,13 +6,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Avatar from "@mui/material/Avatar";
-import ButonLoginGoogle from "../login/ButonLoginGoogle";
-import { Utilizator } from "../../types/Utilizator";
+import { RolUtilizator, Utilizator } from "../../types/Utilizator";
 import api from "../../api";
 import { Button } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router-dom";
+import { ButonLoginGoogle } from "./ButonLoginGoogle";
 
-export default function AppBarConditional() {
+export const AppBarConditional = () => {
   const [utilizator, setUtilizator] = useState<Utilizator | null>(null);
   const [esteLogat, setEsteLogat] = useState(false);
 
@@ -44,9 +45,11 @@ export default function AppBarConditional() {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box sx={{ flexGrow: 1 }} marginBottom={8}>
+      <AppBar position="fixed">
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Typography variant="h6" component="div">
@@ -54,13 +57,33 @@ export default function AppBarConditional() {
             </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {esteLogat ? (
+            {esteLogat && utilizator != null ? (
               <>
+                {utilizator.rol === RolUtilizator.ADMIN && (
+                  <>
+                    <Button
+                      variant="contained"
+                      onClick={() => navigate("/adauga-eveniment")}
+                    >
+                      Adăugare Eveniment
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => navigate("/adauga-sala")}
+                    >
+                      Adăugare Sală
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="contained"
                   startIcon={<NotificationsIcon />}
                 ></Button>
-                <Avatar alt="Avatar Utilizator" src={utilizator?.avatar} />
+                <Avatar
+                  alt="Avatar Utilizator"
+                  src={utilizator?.avatar}
+                  imgProps={{ referrerPolicy: "no-referrer" }}
+                />
                 <Button
                   variant="contained"
                   startIcon={<LogoutIcon />}
@@ -77,4 +100,4 @@ export default function AppBarConditional() {
       </AppBar>
     </Box>
   );
-}
+};

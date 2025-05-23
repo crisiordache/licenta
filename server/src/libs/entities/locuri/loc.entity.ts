@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Bilet } from '../bilete/bilet.entity';
+import { Sala } from '../sali/sala.entity';
 
 @Entity()
 export class Loc {
@@ -6,11 +8,20 @@ export class Loc {
   idLoc: number;
 
   @Column()
-  rand: number;
+  rand: string;
 
   @Column()
-  numarLoc: number;
+  numar: number;
 
-  @Column({ default: false })
-  esteRezervat: boolean;
+  @Column()
+  x: number;
+
+  @Column()
+  y: number;
+
+  @ManyToOne(() => Sala, (sala) => sala.locuri)
+  sala: Sala;
+
+  @ManyToOne(() => Bilet, (bilete) => bilete.loc)
+  bilete: Bilet[];
 }

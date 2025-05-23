@@ -13,6 +13,8 @@ export class CreateEvenimentDTO {
   numeEveniment: string;
   descriere: string;
   dataEveniment: Date;
+  oraIncepere: string;
+  cuLocuriNominale: boolean;
   poster: string;
   sala: number;
 }

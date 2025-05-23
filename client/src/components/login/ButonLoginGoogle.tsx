@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 
-const ButonLoginGoogle = () => {
+export const ButonLoginGoogle = () => {
   const handleLogin = () => {
     window.location.href = "http://localhost:8000/auth/google";
   };
@@ -19,5 +19,3 @@ const ButonLoginGoogle = () => {
     </div>
   );
 };
-
-export default ButonLoginGoogle;

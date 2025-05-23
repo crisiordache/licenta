@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Bilet } from '../bilete/bilet.entity';
 import { Sala } from '../sali/sala.entity';
+import { TipBilet } from '../tipuriBilet/tipBilet.entity';
 
 @Entity()
 export class Eveniment {
@@ -23,6 +24,12 @@ export class Eveniment {
   dataEveniment: Date;
 
   @Column()
+  oraIncepere: string;
+
+  @Column()
+  cuLocNominal: boolean;
+
+  @Column()
   poster: string;
 
   @OneToMany(() => Bilet, (bilet) => bilet.eveniment)
@@ -30,4 +37,7 @@ export class Eveniment {
 
   @ManyToOne(() => Sala, (sala) => sala.evenimente)
   sala: Sala;
+
+  @OneToMany(() => TipBilet, (tipuriBilete) => tipuriBilete.eveniment)
+  tipuriBilet: TipBilet[];
 }

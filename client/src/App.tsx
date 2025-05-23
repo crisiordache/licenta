@@ -1,13 +1,16 @@
 import "./App.css";
-import AppBarConditional from "./components/login/AppBar";
-import ListaEvenimente from "./components/paginaPrincipala/ListaEvenimente";
+import { Routes, Route } from "react-router-dom";
+import { Acasa } from "./pages/Acasa";
+import { AdaugareEveniment } from "./pages/AdaugareEveniment";
+import { AdaugareSala } from "./pages/AdaugareSala";
 
 function App() {
   return (
-    <div className="App">
-      <AppBarConditional></AppBarConditional>
-      <ListaEvenimente></ListaEvenimente>
-    </div>
+    <Routes>
+      <Route path="/" element={<Acasa />} />
+      <Route path="/adauga-eveniment" element={<AdaugareEveniment />} />
+      <Route path="/adauga-sala" element={<AdaugareSala />} />
+    </Routes>
   );
 }
 

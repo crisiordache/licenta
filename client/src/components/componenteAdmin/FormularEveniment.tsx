@@ -16,13 +16,14 @@ import api from "../../api";
 import Sala from "../../types/Sala";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-export default function FormularEveniment() {
+export const FormularEveniment = () => {
   const [formData, setFormData] = useState({
-    denumireEveniment: "",
+    numeEveniment: "",
     descriere: "",
     dataEveniment: "",
-    denumireSala: "",
-    poster: "",
+    oraIncepere: "",
+    cuLocuriNominale: "false",
+    sala: "",
   });
 
   const [sali, setSali] = useState<Sala[]>([]);
@@ -73,30 +74,32 @@ export default function FormularEveniment() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const formDataWithImage = new FormData();
-      formDataWithImage.append("denumireEveniment", formData.denumireEveniment);
-      formDataWithImage.append("descriere", formData.descriere);
-      formDataWithImage.append("dataEveniment", formData.dataEveniment);
-      formDataWithImage.append("denumireSala", formData.denumireSala);
+      const formDataCuImagine = new FormData();
+      formDataCuImagine.append("numeEveniment", formData.numeEveniment);
+      formDataCuImagine.append("descriere", formData.descriere);
+      formDataCuImagine.append("dataEveniment", formData.dataEveniment);
+      formDataCuImagine.append("oraIncepere", formData.oraIncepere);
+      formDataCuImagine.append("cuLocuriNominale", formData.cuLocuriNominale);
+      formDataCuImagine.append("sala", formData.sala);
       if (imageFile) {
-        formDataWithImage.append("poster", imageFile);
+        formDataCuImagine.append("poster", imageFile);
       }
 
-      await api.post("/evenimente", formDataWithImage, {
+      await api.post("/evenimente", formDataCuImagine, {
         withCredentials: true,
       });
       alert("Eveniment adăugat cu succes!");
       setFormData({
-        denumireEveniment: "",
+        numeEveniment: "",
         descriere: "",
         dataEveniment: "",
-        denumireSala: "",
-        poster: "",
+        oraIncepere: "",
+        cuLocuriNominale: "false",
+        sala: "",
       });
       setImageFile(null);
     } catch (error) {
-      console.error("Eroare la salvare:", error);
-      alert("Eroare la adăugare.");
+      console.error("Eroare la salvare eveniment:", error);
     }
   };
 
@@ -113,10 +116,10 @@ export default function FormularEveniment() {
       <TextField
         fullWidth
         required
-        name="denumireEveniment"
+        name="numeEveniment"
         label="Nume eveniment"
         variant="outlined"
-        value={formData.denumireEveniment}
+        value={formData.numeEveniment}
         onChange={handleInputChange}
         sx={{ mb: 2 }}
       />
@@ -134,6 +137,23 @@ export default function FormularEveniment() {
         sx={{ mb: 2 }}
       />
 
+      <FormControl fullWidth required sx={{ mb: 2 }}>
+        <InputLabel id="sala-label">Sala</InputLabel>
+        <Select
+          labelId="sala-label"
+          name="sala"
+          value={formData.sala}
+          label="Sala"
+          onChange={handleSelectChange}
+        >
+          {sali.map((sala) => (
+            <MenuItem key={sala.idSala} value={sala.idSala.toString()}>
+              {sala.denumireSala}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
       <TextField
         fullWidth
         required
@@ -146,20 +166,29 @@ export default function FormularEveniment() {
         sx={{ mb: 2 }}
       />
 
+      <TextField
+        fullWidth
+        required
+        name="oraIncepere"
+        label="Ora Începere"
+        type="time"
+        InputLabelProps={{ shrink: true }}
+        value={formData.oraIncepere}
+        onChange={handleInputChange}
+        sx={{ mb: 2 }}
+      />
+
       <FormControl fullWidth required sx={{ mb: 2 }}>
-        <InputLabel id="denumireSala-label">Sala</InputLabel>
+        <InputLabel id="cuLocuriNominale-label">Locuri nominale?</InputLabel>
         <Select
-          labelId="denumireSala-label"
-          name="denumireSala"
-          value={formData.denumireSala}
-          label="Sala"
+          labelId="cuLocuriNominale-label"
+          name="cuLocuriNominale"
+          value={formData.cuLocuriNominale}
+          label="Locuri nominale?"
           onChange={handleSelectChange}
         >
-          {sali.map((sala) => (
-            <MenuItem key={sala.idSala} value={sala.denumireSala}>
-              {sala.denumireSala}
-            </MenuItem>
-          ))}
+          <MenuItem value="true">Da</MenuItem>
+          <MenuItem value="false">Nu</MenuItem>
         </Select>
       </FormControl>
 
@@ -182,4 +211,4 @@ export default function FormularEveniment() {
       </Button>
     </Box>
   );
-}
+};
