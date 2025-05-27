@@ -1,4 +1,5 @@
 export default interface Sala {
   idSala: number;
-  denumireSala: string;
+  numeSala: string;
+  structura: string;
 }

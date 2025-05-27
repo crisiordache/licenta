@@ -27,6 +27,9 @@ export class Eveniment {
   oraIncepere: string;
 
   @Column()
+  durataEveniment: number;
+
+  @Column()
   cuLocNominal: boolean;
 
   @Column()

@@ -1,20 +1,14 @@
-import { BiletDTO } from '../bilete/bilet.dto';
-
-export class EvenimentDTO {
-  idEveniment: number;
-  numeEveniment: string;
-  descriere: string;
-  dataEveniment: Date;
-  sala: number;
-  bilete: BiletDTO[];
-}
+import { CreateTipBiletDTO } from '../tipuriBilet/tipBilet.dto';
 
 export class CreateEvenimentDTO {
   numeEveniment: string;
   descriere: string;
-  dataEveniment: Date;
+  dataEveniment: string;
   oraIncepere: string;
-  cuLocuriNominale: boolean;
-  poster: string;
-  sala: number;
+  durataEveniment: number;
+  cuLocNominal: boolean;
+  poster?: string;
+  idSala: number;
+  pretBiletGeneralImplicit?: number;
+  tipuriBilete?: CreateTipBiletDTO[];
 }

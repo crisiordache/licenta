@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Comanda } from '../comenzi/comanda.entity';
 import { Eveniment } from '../evenimente/eveniment.entity';
 import { TipBilet } from '../tipuriBilet/tipBilet.entity';
@@ -18,6 +12,12 @@ export class Bilet {
   @Column()
   codQR: string;
 
+  @Column()
+  esteRezervat: boolean;
+
+  @Column()
+  esteCumparat: boolean;
+
   @ManyToOne(() => Comanda, (comanda) => comanda.bilete)
   comanda: Comanda;
 
@@ -27,6 +27,6 @@ export class Bilet {
   @ManyToOne(() => TipBilet, (tipBilet) => tipBilet.bilete)
   tipBilet: TipBilet;
 
-  @OneToMany(() => Loc, (loc) => loc.bilete)
+  @ManyToOne(() => Loc, (loc) => loc.bilete)
   loc: Loc;
 }

@@ -1,0 +1,112 @@
+/* CardEveniment.css */
+
+.eveniment-card {
+    display: flex;
+    flex-direction: column; /* Stivuiește posterul deasupra conținutului */
+    border: 1px solid #e0e0e0;
+    border-radius: 12px; /* Colțuri mai rotunde */
+    overflow: hidden;
+    margin: 20px; /* Margine mai mare pentru spațiere */
+    width: 320px;
+    min-width: 280px; /* Lățime minimă */
+    max-width: 350px; /* Lățime maximă */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Umbră mai pronunțată */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    background-color: #ffffff;
+    font-family: 'Roboto', sans-serif; /* Un font mai modern */
+    color: #333;
+}
+
+.eveniment-card:hover {
+    transform: translateY(-8px); /* Efect mai vizibil la hover */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.eveniment-card-poster {
+    width: 100%;
+    height: 200px; /* Înălțime mai mare pentru poster */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8; /* Un fundal mai deschis */
+}
+
+.eveniment-card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.eveniment-card-content {
+    padding: 20px; /* Padding mai mare */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.eveniment-card-title {
+    font-size: 1.8em; /* Titlu mai mare */
+    font-weight: 700; /* Bold */
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #212121;
+    min-height: 60px; /* Asigură înălțime minimă pentru titlu */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limitează la 2 linii */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eveniment-card-description {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    max-height: 75px; /* Înălțime mai mare pentru descriere */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Limitează la 4 linii */
+    -webkit-box-orient: vertical;
+}
+
+.eveniment-card-details {
+    margin-bottom: 25px; /* Spațiu mai mare sub detalii */
+    font-size: 0.9em;
+    color: #666;
+}
+
+.eveniment-card-detail {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Spațiu mai mare între detalii */
+}
+
+.eveniment-card-icon {
+    font-size: 1.3em; /* Dimensiune iconițe puțin mai mari */
+    margin-right: 10px;
+    color: #007bff; /* Culoarea primară */
+}
+
+.eveniment-card-detail span {
+    font-weight: 500; /* Textul detaliilor ușor bold */
+}
+
+.eveniment-card-buy-button {
+    margin-top: auto;
+    width: 100%;
+    padding: 12px 0; /* Padding mai mare pentru buton */
+    font-size: 1.1em; /* Text mai mare pe buton */
+    font-weight: 600; /* Bold */
+    background-color: #007bff; /* Culoare primară */
+    color: #fff;
+    border-radius: 8px; /* Colțuri rotunde pentru buton */
+    transition: background-color 0.3s ease;
+}
+
+.eveniment-card-buy-button:hover {
+    background-color: #0056b3; /* Culoare mai închisă la hover */
+}

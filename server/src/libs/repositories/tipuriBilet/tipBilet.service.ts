@@ -10,8 +10,8 @@ export class TipuriBiletService {
     private tipuriBiletRepository: Repository<TipBilet>,
   ) {}
 
-  create(Comanda: TipBilet): Promise<TipBilet> {
-    return this.tipuriBiletRepository.save(Comanda);
+  create(TipBilet: TipBilet): Promise<TipBilet> {
+    return this.tipuriBiletRepository.save(TipBilet);
   }
 
   findAll(): Promise<TipBilet[]> {

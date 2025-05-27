@@ -1,11 +1,7 @@
-import { BiletDTO } from '../bilete/bilet.dto';
-
-export class TipBiletDTO {
-  idTipBilet: number;
-  pret: number;
-  bilete: BiletDTO[];
-}
+import { CreateLocDTO } from '../locuri/loc.dto';
 
 export class CreateTipBiletDTO {
+  numeTip: string;
   pret: number;
+  locuri: CreateLocDTO[];
 }
