@@ -1,112 +1,83 @@
-/* CardEveniment.css */
+.eveniment-card-orizontal {
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: stretch;
 
-.eveniment-card {
-    display: flex;
-    flex-direction: column; /* Stivuiește posterul deasupra conținutului */
-    border: 1px solid #e0e0e0;
-    border-radius: 12px; /* Colțuri mai rotunde */
-    overflow: hidden;
-    margin: 20px; /* Margine mai mare pentru spațiere */
-    width: 320px;
-    min-width: 280px; /* Lățime minimă */
-    max-width: 350px; /* Lățime maximă */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Umbră mai pronunțată */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    background-color: #ffffff;
-    font-family: 'Roboto', sans-serif; /* Un font mai modern */
-    color: #333;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
+  cursor: pointer; 
 }
 
-.eveniment-card:hover {
-    transform: translateY(-8px); /* Efect mai vizibil la hover */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+.eveniment-card-orizontal:hover {
+  transform: translateY(-5px); 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
 }
 
-.eveniment-card-poster {
-    width: 100%;
-    height: 200px; /* Înălțime mai mare pentru poster */
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f8f8; /* Un fundal mai deschis */
+.eveniment-card-orizontal-poster {
+  flex: 0 0 auto;
+  width: 250px;
+  overflow: hidden;
 }
 
-.eveniment-card-poster img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+.eveniment-card-orizontal-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.eveniment-card-content {
-    padding: 20px; /* Padding mai mare */
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+.eveniment-card-orizontal-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  min-height: 250px;
 }
 
-.eveniment-card-title {
-    font-size: 1.8em; /* Titlu mai mare */
-    font-weight: 700; /* Bold */
-    margin-top: 0;
-    margin-bottom: 12px;
-    color: #212121;
-    min-height: 60px; /* Asigură înălțime minimă pentru titlu */
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limitează la 2 linii */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.eveniment-card-orizontal-title {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-.eveniment-card-description {
-    font-size: 0.95em;
-    color: #555;
-    margin-bottom: 20px;
-    line-height: 1.5;
-    max-height: 75px; /* Înălțime mai mare pentru descriere */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 4; /* Limitează la 4 linii */
-    -webkit-box-orient: vertical;
+.eveniment-card-orizontal-description {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 20px;
+  flex-grow: 1;
 }
 
-.eveniment-card-details {
-    margin-bottom: 25px; /* Spațiu mai mare sub detalii */
-    font-size: 0.9em;
-    color: #666;
+.eveniment-card-orizontal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-.eveniment-card-detail {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; /* Spațiu mai mare între detalii */
+.eveniment-card-orizontal-detail {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  color: #555;
 }
 
-.eveniment-card-icon {
-    font-size: 1.3em; /* Dimensiune iconițe puțin mai mari */
-    margin-right: 10px;
-    color: #007bff; /* Culoarea primară */
+.eveniment-card-orizontal-icon {
+  margin-right: 10px;
+  color: #007bff;
+  font-size: 1.2em;
 }
 
-.eveniment-card-detail span {
-    font-weight: 500; /* Textul detaliilor ușor bold */
-}
-
-.eveniment-card-buy-button {
-    margin-top: auto;
-    width: 100%;
-    padding: 12px 0; /* Padding mai mare pentru buton */
-    font-size: 1.1em; /* Text mai mare pe buton */
-    font-weight: 600; /* Bold */
-    background-color: #007bff; /* Culoare primară */
-    color: #fff;
-    border-radius: 8px; /* Colțuri rotunde pentru buton */
-    transition: background-color 0.3s ease;
-}
-
-.eveniment-card-buy-button:hover {
-    background-color: #0056b3; /* Culoare mai închisă la hover */
+.eveniment-card-orizontal-buy-button {
+  position: absolute !important;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
 }

@@ -1,11 +1,13 @@
 import { Eveniment } from "../../types/Eveniment";
 import TodayIcon from "@mui/icons-material/Today";
-import LocationOnIcon from "@mui/icons-material/LocationOn"; // Corrected icon name
-import AccessTimeIcon from "@mui/icons-material/AccessTime"; // Added for time
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { RolUtilizator, Utilizator } from "../../types/Utilizator";
 import api from "../../api";
+import { useNavigate } from "react-router-dom";
+
 import "./CardEveniment.css";
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
 
 const CardEveniment = ({ eveniment }: Props) => {
   const [utilizator, setUtilizator] = useState<Utilizator | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUtilizator = async () => {
@@ -25,14 +28,13 @@ const CardEveniment = ({ eveniment }: Props) => {
           setUtilizator(res.data);
         }
       } catch (error) {
-        setUtilizator(null); // Set user to null on error (e.g., not logged in)
+        setUtilizator(null);
       }
     };
     fetchUtilizator();
   }, []);
 
-  // Formatarea datei pentru afișare
-  const formattedDate = new Date(eveniment.dataEveniment).toLocaleDateString(
+  const dataFormatata = new Date(eveniment.dataEveniment).toLocaleDateString(
     "ro-RO",
     {
       year: "numeric",
@@ -41,46 +43,51 @@ const CardEveniment = ({ eveniment }: Props) => {
     }
   );
 
+  const posterUrl = eveniment.poster
+    ? `http://localhost:8000/${eveniment.poster.replace(/\\/g, "/")}`
+    : undefined;
+
+  const handleCumparaBiletClick = () => {
+    navigate("/eveniment/${evenimnet.idEveniment}/bilete");
+  };
+
   return (
-    <div className="eveniment-card">
-      {eveniment.poster && (
-        <div className="eveniment-card-poster">
-          <img src={eveniment.poster} alt={eveniment.denumireEveniment} />
+    <div className="eveniment-card-orizontal">
+      {posterUrl && (
+        <div className="eveniment-card-orizontal-poster">
+          <img src={posterUrl} alt={eveniment.numeEveniment} />
         </div>
       )}
-      <div className="eveniment-card-content">
-        <h2 className="eveniment-card-title">{eveniment.denumireEveniment}</h2>
-        <p className="eveniment-card-description">{eveniment.descriere}</p>
-        <div className="eveniment-card-details">
-          <p className="eveniment-card-detail">
-            <TodayIcon className="eveniment-card-icon" />
-            <span>{formattedDate}</span>
+      <div className="eveniment-card-orizontal-content">
+        <h2 className="eveniment-card-orizontal-title">
+          {eveniment.numeEveniment}
+        </h2>
+        <p className="eveniment-card-orizontal-description">
+          {eveniment.descriere}
+        </p>
+        <div className="eveniment-card-orizontal-details">
+          <p className="eveniment-card-orizontal-detail">
+            <TodayIcon className="eveniment-card-orizontal-icon" />
+            <span>{dataFormatata}</span>
           </p>
-          <p className="eveniment-card-detail">
-            <AccessTimeIcon className="eveniment-card-icon" />
+          <p className="eveniment-card-orizontal-detail">
+            <AccessTimeIcon className="eveniment-card-orizontal-icon" />
             <span>
-              {eveniment.oraIncepere} ({eveniment.dataEveniment} min)
+              {eveniment.oraIncepere} ({eveniment.durataEveniment} min)
             </span>
           </p>
-          <p className="eveniment-card-detail">
-            <LocationOnIcon className="eveniment-card-icon" />{" "}
-            {/* Corrected icon name */}
-            <span>
-              {eveniment.sala?.numeSala || "Detalii Sala lipsesc"}
-            </span>{" "}
-            {/* Assuming eveniment.sala is an object with numeSala */}
-          </p>
-          <p className="eveniment-card-detail">
-            <span>Locuri Nominale: {eveniment.cuLocNominal ? "Da" : "Nu"}</span>
+          <p className="eveniment-card-orizontal-detail">
+            <LocationOnIcon className="eveniment-card-orizontal-icon" />
+            <span>{eveniment.sala?.numeSala || "Detalii Sala lipsesc"}</span>
           </p>
         </div>
 
-        {/* Butonul "Cumpără bilet" vizibil doar pentru clienți */}
         {utilizator?.rol === RolUtilizator.CLIENT && (
           <Button
             variant="contained"
             color="primary"
-            className="eveniment-card-buy-button"
+            className="eveniment-card-orizontal-buy-button"
+            onClick={handleCumparaBiletClick}
           >
             Cumpără bilet
           </Button>
