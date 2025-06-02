@@ -1,6 +1,5 @@
 export interface TipBilet {
-  idTipBilet: number | string,
+  idTipBilet: number,
   pret: number | string,
   numeTip: string,
-  
 }

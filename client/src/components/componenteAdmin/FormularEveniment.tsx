@@ -1,4 +1,3 @@
-// FormularEveniment.tsx
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
   TextField,
@@ -36,9 +35,8 @@ export const FormularEveniment = () => {
     dataEveniment: "",
     oraIncepere: "",
     durataEveniment: "",
-    cuLocuriNominale: "false",
+    cuLocNominal: "false",
     sala: "",
-    pretBiletGeneral: "", // REINTRODUS: pentru afișarea câmpului în UI
   });
 
   const [sali, setSali] = useState<Sala[]>([]);
@@ -114,13 +112,6 @@ export const FormularEveniment = () => {
       setTipuriBilete([]);
       setLocuriSelectateCurent(new Map());
       setActiveTipBiletId(null);
-      // Reset pretBiletGeneral only if switching to nominal (it shouldn't be used then)
-      if (value === "true") {
-        setFormData((prev) => ({
-          ...prev,
-          pretBiletGeneral: "", // Reset when switching to nominal
-        }));
-      }
     }
   };
 
@@ -152,7 +143,7 @@ export const FormularEveniment = () => {
         return false;
       }
       if (
-        formData.cuLocuriNominale === "true" &&
+        formData.cuLocNominal === "true" &&
         bilet.locuriAsignate.length === 0
       ) {
         setValidationError(
@@ -164,7 +155,7 @@ export const FormularEveniment = () => {
       setValidationError(null);
       return true;
     },
-    [formData.cuLocuriNominale]
+    [formData.cuLocNominal]
   );
 
   const saveCurrentActiveBilet = useCallback(() => {
@@ -193,8 +184,7 @@ export const FormularEveniment = () => {
         bilet.numeTip.trim() === "" ||
         bilet.pret === "" ||
         Number(bilet.pret) <= 0 ||
-        (formData.cuLocuriNominale === "true" &&
-          bilet.locuriAsignate.length === 0)
+        (formData.cuLocNominal === "true" && bilet.locuriAsignate.length === 0)
     );
     if (incompleteBilet) {
       setValidationError(
@@ -203,7 +193,7 @@ export const FormularEveniment = () => {
       return;
     }
 
-    const newId = Date.now().toString();
+    const newId = Date.now();
     const newTipBilet: TipBiletCuLocuri = {
       idTipBilet: newId,
       numeTip: "",
@@ -230,19 +220,20 @@ export const FormularEveniment = () => {
     field: keyof TipBilet,
     value: string
   ) => {
-    setTipuriBilete((prev) =>
-      prev.map((bilet) =>
+    setTipuriBilete((prev) => {
+      const updated = prev.map((bilet) =>
         bilet.idTipBilet === id ? { ...bilet, [field]: value } : bilet
-      )
-    );
-    const updatedBilet = tipuriBilete.find((b) => b.idTipBilet === id);
-    if (updatedBilet) {
-      validateTipBilet({ ...updatedBilet, [field]: value } as TipBiletCuLocuri);
-    }
+      );
+      const biletValidat = updated.find((b) => b.idTipBilet === id);
+      if (biletValidat) {
+        validateTipBilet(biletValidat as TipBiletCuLocuri);
+      }
+      return updated;
+    });
   };
 
   const handleToggleLocSelectat = (loc: Loc) => {
-    const locKey = `${loc.rand}-${loc.numar}`; // Assuming rand is string for Loc
+    const locKey = `${loc.rand}-${loc.numar}`;
     setLocuriSelectateCurent((prev) => {
       const newMap = new Map(prev);
 
@@ -299,7 +290,6 @@ export const FormularEveniment = () => {
       return [];
     }
     try {
-      // Asigură-te că structura sălii parsată corespunde cu Loc (rand: string, x, y)
       const parsed = JSON.parse(detaliiSalaSelectata.structura) as Loc[];
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
@@ -313,7 +303,7 @@ export const FormularEveniment = () => {
     setValidationError(null);
     setSuccessMessage(null);
 
-    // Validează câmpurile esențiale
+    // Validează datele principale ale evenimentului
     if (
       !formData.numeEveniment ||
       !formData.descriere ||
@@ -321,6 +311,7 @@ export const FormularEveniment = () => {
       !formData.dataEveniment ||
       !formData.oraIncepere ||
       !formData.durataEveniment ||
+      isNaN(Number(formData.durataEveniment)) ||
       Number(formData.durataEveniment) <= 0
     ) {
       setValidationError(
@@ -329,26 +320,8 @@ export const FormularEveniment = () => {
       return;
     }
 
-    if (
-      isNaN(Number(formData.durataEveniment)) ||
-      Number(formData.durataEveniment) <= 0
-    ) {
-      setValidationError(
-        "Durata evenimentului trebuie să fie un număr pozitiv."
-      );
-      return;
-    }
-
-    if (formData.cuLocuriNominale === "false") {
-      const pretGeneralNum = Number(formData.pretBiletGeneral);
-      if (isNaN(pretGeneralNum) || pretGeneralNum <= 0) {
-        setValidationError(
-          "Pentru evenimente fără locuri nominale, te rugăm să introduci un preț valid (> 0) pentru biletul general."
-        );
-        return;
-      }
-    } else {
-      // cuLocuriNominale === "true"
+    // Validează tipurile de bilete dacă sunt cu loc nominal
+    if (formData.cuLocNominal === "true") {
       let finalTipuriBilete = [...tipuriBilete];
       if (activeTipBiletId !== null) {
         const activeBiletIndex = finalTipuriBilete.findIndex(
@@ -383,36 +356,54 @@ export const FormularEveniment = () => {
       }
     }
 
-    const dataToSend = new FormData();
-    dataToSend.append("numeEveniment", formData.numeEveniment);
-    dataToSend.append("descriere", formData.descriere);
-    dataToSend.append("dataEveniment", formData.dataEveniment);
-    dataToSend.append("oraIncepere", formData.oraIncepere);
-    dataToSend.append("durataEveniment", formData.durataEveniment);
-    dataToSend.append("cuLocuriNominale", formData.cuLocuriNominale);
-    dataToSend.append("sala", formData.sala);
-
-    if (imageFile) {
-      dataToSend.append("poster", imageFile);
-    }
-
-    if (formData.cuLocuriNominale === "true") {
-      const tipuriBileteBackend = tipuriBilete.map(
-        ({ idTipBilet, ...rest }) => ({
-          ...rest,
-          pret: Number(rest.pret),
-        })
-      );
-      dataToSend.append("tipuriBilete", JSON.stringify(tipuriBileteBackend));
-    } else {
-      // Când nu sunt locuri nominale, trimitem pretBiletGeneral ca pretBiletGeneralImplicit
-      dataToSend.append("pretBiletGeneralImplicit", formData.pretBiletGeneral);
-    }
+    // *** ÎNCEPE MODIFICAREA AICI ***
 
     try {
-      const response = await api.post("/evenimente", dataToSend, {
+      const formDataToSend = new FormData();
+
+      // Adaugă câmpurile simple din formData
+      formDataToSend.append("numeEveniment", formData.numeEveniment);
+      formDataToSend.append("descriere", formData.descriere);
+      formDataToSend.append("dataEveniment", formData.dataEveniment);
+      formDataToSend.append("oraIncepere", formData.oraIncepere);
+      formDataToSend.append(
+        "durataEveniment",
+        String(formData.durataEveniment)
+      ); // Convert to string
+      formDataToSend.append(
+        "cuLocNominal",
+        String(formData.cuLocNominal === "true")
+      ); // Convert to boolean string
+      formDataToSend.append("idSala", String(formData.sala)); // Convert to string
+
+      // Adaugă fișierul poster
+      if (imageFile) {
+        formDataToSend.append("poster", imageFile);
+      } else {
+        // Dacă posterul este opțional, poți seta o valoare goală
+        // sau te asiguri că backend-ul acceptă fișier lipsă.
+        // În controllerul tău, fileIsRequired: false permite asta.
+      }
+
+      // Adaugă tipurile de bilete. JSON.stringify() este necesar pentru a le trimite ca string.
+      // Backend-ul NestJS (ParseArrayPipe sau similar) va deserializa automat.
+      const tipuriBiletePentruBackend = tipuriBilete.map(
+        ({ idTipBilet, ...rest }) => ({
+          ...rest,
+          pret: Number(rest.pret), // Asigură-te că prețul este număr
+        })
+      );
+      formDataToSend.append(
+        "tipuriBilete",
+        JSON.stringify(tipuriBiletePentruBackend)
+      ); // Trimite ca string JSON
+
+      // Trimite cererea POST cu FormData
+      const response = await api.post("/evenimente", formDataToSend, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          // Axios va seta automat 'Content-Type': 'multipart/form-data'
+          // când trimiți un obiect FormData. Nu trebuie să o setezi manual.
+          // "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });
@@ -420,15 +411,15 @@ export const FormularEveniment = () => {
       console.log("Eveniment adăugat cu succes:", response.data);
       setSuccessMessage("Eveniment adăugat cu succes!");
 
+      // Reset form
       setFormData({
         numeEveniment: "",
         descriere: "",
         dataEveniment: "",
         oraIncepere: "",
         durataEveniment: "",
-        cuLocuriNominale: "false",
+        cuLocNominal: "false",
         sala: "",
-        pretBiletGeneral: "", // Resetare pretBiletGeneral
       });
       setImageFile(null);
       setTipuriBilete([]);
@@ -442,6 +433,14 @@ export const FormularEveniment = () => {
         "Eroare la salvare eveniment:",
         error.response?.data || error
       );
+
+      if (error.response?.data) {
+        console.log(
+          "Detailed error:",
+          JSON.stringify(error.response.data, null, 2)
+        );
+      }
+
       setValidationError(
         error.response?.data?.message ||
           "Eroare la salvare eveniment. Verifică consola pentru detalii."
@@ -453,7 +452,7 @@ export const FormularEveniment = () => {
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 500, mx: "auto", p: 2 }}
+      sx={{ maxWidth: 800, mx: "auto", p: 2 }}
     >
       <Typography variant="h6" mb={2}>
         Adaugă Eveniment
@@ -553,7 +552,7 @@ export const FormularEveniment = () => {
         <Select
           labelId="cuLocuriNominale-label"
           name="cuLocuriNominale"
-          value={formData.cuLocuriNominale}
+          value={formData.cuLocNominal}
           label="Locuri nominale?"
           onChange={handleSelectChange}
         >
@@ -562,23 +561,7 @@ export const FormularEveniment = () => {
         </Select>
       </FormControl>
 
-      {/* REINTRODUS: Câmpul pentru pretBiletGeneral, vizibil doar dacă nu sunt locuri nominale */}
-      {formData.cuLocuriNominale === "false" && (
-        <TextField
-          fullWidth
-          required
-          name="pretBiletGeneral"
-          label="Preț Bilet General"
-          variant="outlined"
-          type="number"
-          value={formData.pretBiletGeneral}
-          onChange={handleInputChange}
-          sx={{ mb: 2 }}
-          inputProps={{ min: "0", step: "0.01" }}
-        />
-      )}
-
-      {formData.cuLocuriNominale === "true" && (
+      {formData.cuLocNominal === "true" && (
         <Box
           sx={{
             border: "1px dashed #ccc",
@@ -593,7 +576,7 @@ export const FormularEveniment = () => {
           }}
         >
           <Typography variant="h6" mb={2}>
-            Configurare Bilete și Locuri Nominalizate
+            Configurare bilete cu locuri
           </Typography>
 
           <Typography variant="subtitle1" mb={1}>
@@ -683,7 +666,7 @@ export const FormularEveniment = () => {
           </Button>
 
           <Typography variant="subtitle1" mb={1}>
-            Selectează Locurile Nominalizate:
+            Selectează locurile:
             {activeTipBiletId && (
               <Typography
                 component="span"
@@ -717,7 +700,7 @@ export const FormularEveniment = () => {
                 {parsedStructuraLocuri.length > 0 ? (
                   <VizualizareSala
                     structura={parsedStructuraLocuri}
-                    selectedLocuri={locuriSelectateCurent}
+                    locuriSelectate={locuriSelectateCurent}
                     onToggleLoc={handleToggleLocSelectat}
                     locuriBolcate={locuriBlocate}
                   />
@@ -739,18 +722,25 @@ export const FormularEveniment = () => {
         </Box>
       )}
 
-      <Button
-        component="label"
-        role={undefined}
-        variant="contained"
-        tabIndex={-1}
-        startIcon={<CloudUploadIcon />}
-        sx={{ mb: 2 }}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          mb: 2,
+        }}
       >
-        Încărcați fotografia
-        <Input type="file" onChange={handleImageChange} hidden />
-      </Button>
-
+        <Button
+          component="label"
+          role={undefined}
+          variant="contained"
+          tabIndex={-1}
+          startIcon={<CloudUploadIcon />}
+        >
+          Încărcați fotografia
+          <Input type="file" onChange={handleImageChange} hidden />
+        </Button>
+      </Box>
       {imageError && <FormHelperText error>{imageError}</FormHelperText>}
       {imageFile && (
         <Typography variant="body2" sx={{ mb: 2 }}>

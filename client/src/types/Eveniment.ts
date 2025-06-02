@@ -6,8 +6,9 @@ export interface Eveniment {
   oraIncepere: string;
   descriere: string;
   idEveniment: number;
-  denumireEveniment: string;
+  numeEveniment: string;
   dataEveniment: string;
+  durataEveniment: string;
   denumireSala: string;
   poster: string; 
 }

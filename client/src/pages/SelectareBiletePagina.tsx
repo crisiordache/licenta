@@ -1,4 +1,4 @@
-import SelectareBilete from "../components/componenteClient/SelectareBilete";
+import { SelectareBilete } from "../components/componenteClient/SelectareBilete";
 import { AppBarConditional } from "../components/login/AppBar";
 
 const SelectareBiletePagina = () => {
@@ -9,3 +9,5 @@ const SelectareBiletePagina = () => {
     </>
   );
 };
+
+export default SelectareBiletePagina;

@@ -10,6 +10,7 @@ import { useState, useMemo } from "react";
 import api from "../../api";
 import { Loc } from "../../types/Loc";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 export const FormularSala = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ export const FormularSala = () => {
           const text = event.target?.result as string;
           const parsed = JSON.parse(text);
           if (!Array.isArray(parsed)) {
-            reject("Structura nu e un array.");
+            reject(new Error("Structura nu e un array."));
           } else {
             const isValid = parsed.every(
               (item: any) =>
@@ -80,17 +81,19 @@ export const FormularSala = () => {
             );
             if (!isValid) {
               reject(
-                "Structura JSON conține obiecte Loc invalide (lipsesc rand, numar, x sau y, sau au tip greșit)."
+                new Error(
+                  "Structura JSON conține obiecte Loc invalide (lipsesc rand, numar, x sau y, sau au tip greșit)."
+                )
               );
             }
             resolve(parsed);
           }
-        } catch (err) {
-          reject("Eroare la parsarea JSON-ului.");
+        } catch (err: any) {
+          reject(new Error("Eroare la parsarea JSON-ului: " + err.message));
         }
       };
 
-      reader.onerror = () => reject("Eroare la citirea fișierului.");
+      reader.onerror = () => reject(new Error("Eroare la citirea fișierului."));
 
       reader.readAsText(file);
     });
@@ -109,29 +112,43 @@ export const FormularSala = () => {
       setJsonError("");
       e.target.value = "";
     } catch (error: any) {
-      setJsonError("Fișier JSON invalid: " + error.message || error);
+      setJsonError("Fișier JSON invalid: " + (error.message || error));
       console.error(error);
     }
   };
 
-  const { width: containerWidth, height: containerHeight } = useMemo(() => {
-    if (formData.structura.length === 0) return { width: 0, height: 0 };
+  const latimeLoc = 30;
+  const latimeLabelRand = 50;
+  const paddingContainer = 20;
 
-    let maxX = 0;
-    let maxY = 0;
-    const seatSize = 30;
-    const padding = 20;
+  const { latime, lungime } = useMemo(() => {
+    if (formData.structura.length === 0) return { latime: 0, lungime: 0 };
+
+    let xMin = Infinity;
+    let yMin = Infinity;
+    let xMax = 0;
+    let yMax = 0;
 
     formData.structura.forEach((loc) => {
-      const currentX = typeof loc.x === "number" ? loc.x : 0;
-      const currentY = typeof loc.y === "number" ? loc.y : 0;
+      const x = typeof loc.x === "number" ? loc.x : 0;
+      const y = typeof loc.y === "number" ? loc.y : 0;
 
-      if (currentX + seatSize > maxX) maxX = currentX + seatSize;
-      if (currentY + seatSize > maxY) maxY = currentY + seatSize;
+      if (x < xMin) xMin = x;
+      if (y < yMin) yMin = y;
+      if (x + latimeLoc > xMax) xMax = x + latimeLoc;
+      if (y + latimeLoc > yMax) yMax = y + latimeLoc;
     });
 
-    const rowLabelWidth = 50;
-    return { width: maxX + rowLabelWidth + padding, height: maxY + padding };
+    const distantaX = yMax - xMin;
+    const distantaY = yMax - yMin;
+
+    const latimeFinala = latimeLabelRand + distantaX + paddingContainer * 2;
+    const lungimeFinala = distantaY + paddingContainer * 2;
+
+    return {
+      latime: Math.max(200, latimeFinala),
+      lungime: Math.max(150, lungimeFinala),
+    };
   }, [formData.structura]);
 
   const locuriPeRand = useMemo(() => {
@@ -143,6 +160,11 @@ export const FormularSala = () => {
       randuri[loc.rand].push(loc);
     });
 
+    let minY = Infinity;
+    if (formData.structura.length > 0) {
+      minY = Math.min(...formData.structura.map((loc) => loc.y));
+    }
+
     Object.keys(randuri).forEach((rand) => {
       randuri[rand].sort((a, b) => a.numar - b.numar);
     });
@@ -151,7 +173,7 @@ export const FormularSala = () => {
       const primulLocA = randuri[a][0];
       const primulLocB = randuri[b][0];
       if (primulLocA && primulLocB) {
-        return primulLocA.y - primulLocB.y;
+        return primulLocA.y - minY - (primulLocB.y - minY);
       }
       return 0;
     });
@@ -167,11 +189,25 @@ export const FormularSala = () => {
     return result;
   }, [formData.structura]);
 
+  const { offsetX, offsetY } = useMemo(() => {
+    if (formData.structura.length === 0) return { offsetX: 0, offsetY: 0 };
+
+    let minX = Infinity;
+    let minY = Infinity;
+
+    formData.structura.forEach((loc) => {
+      if (loc.x < minX) minX = loc.x;
+      if (loc.y < minY) minY = loc.y;
+    });
+
+    return { offsetX: minX, offsetY: minY };
+  }, [formData.structura]);
+
   return (
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 600, mx: "auto", p: 2 }}
+      sx={{ maxWidth: 800, mx: "auto", p: 2 }}
     >
       <Typography variant="h6" mb={2}>
         Adăugare sală
@@ -222,44 +258,43 @@ export const FormularSala = () => {
         <Box
           sx={{
             mt: 3,
-            p: 1,
             border: "1px solid #ccc",
             borderRadius: 2,
             position: "relative",
-            width: containerWidth,
-            height: containerHeight,
-            minHeight: 200,
-            overflow: "auto",
+            width: latime,
+            height: lungime,
+            overflow: "hidden",
             bgcolor: "#f5f5f5",
+            mx: "auto",
           }}
         >
           {locuriPeRand.map(({ loc, estePrimulDinRand }) => (
-            <>
+            <React.Fragment key={`${loc.rand}-${loc.numar}`}>
               {estePrimulDinRand && (
                 <Typography
                   key={`label-${loc.rand}`}
                   variant="caption"
                   sx={{
                     position: "absolute",
-                    left: loc.x - 40,
-                    top: loc.y + 5,
-                    width: 30,
+                    left: paddingContainer,
+                    top: loc.y - offsetY + latimeLoc / 2 - 8 + paddingContainer,
+                    width: latimeLabelRand - 10,
                     textAlign: "right",
                     fontWeight: "bold",
                     color: "#555",
+                    zIndex: 1,
                   }}
                 >
                   {loc.rand}
                 </Typography>
               )}
               <Box
-                key={`${loc.rand}-${loc.numar}`}
                 sx={{
                   position: "absolute",
-                  left: loc.x,
-                  top: loc.y,
-                  width: 30,
-                  height: 30,
+                  left: loc.x - offsetX + latimeLabelRand + paddingContainer,
+                  top: loc.y - offsetY + paddingContainer,
+                  width: latimeLoc,
+                  height: latimeLoc,
                   bgcolor: "#1976d2",
                   color: "white",
                   fontSize: 12,
@@ -276,7 +311,7 @@ export const FormularSala = () => {
               >
                 {loc.numar}
               </Box>
-            </>
+            </React.Fragment>
           ))}
         </Box>
       )}

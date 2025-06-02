@@ -1,11 +1,11 @@
-import { BiletDTO } from '../bilete/bilet.dto';
+import { CreateBiletDTO } from '../bilete/bilet.dto';
 
 export class ComandaDTO {
   idComanda: number;
   dataComanda: Date;
   valoare: number;
   utilizatorId: number;
-  bilete: BiletDTO[];
+  bilete: CreateBiletDTO[];
 }
 
 export class CreateComandaDTO {

@@ -27,6 +27,6 @@ export class Bilet {
   @ManyToOne(() => TipBilet, (tipBilet) => tipBilet.bilete)
   tipBilet: TipBilet;
 
-  @ManyToOne(() => Loc, (loc) => loc.bilete)
-  loc: Loc;
+  @ManyToOne(() => Loc, (loc) => loc.bilete, { nullable: true })
+  loc: Loc | null;
 }

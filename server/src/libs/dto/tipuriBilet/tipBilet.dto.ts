@@ -1,7 +1,8 @@
-import { CreateLocDTO } from '../locuri/loc.dto';
+import { Eveniment } from 'src/libs/entities/evenimente/eveniment.entity';
 
 export class CreateTipBiletDTO {
   numeTip: string;
   pret: number;
-  locuri: CreateLocDTO[];
+  stocDisponibil: number;
+  eveniment: Eveniment;
 }

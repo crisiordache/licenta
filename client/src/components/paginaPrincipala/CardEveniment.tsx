@@ -48,7 +48,8 @@ const CardEveniment = ({ eveniment }: Props) => {
     : undefined;
 
   const handleCumparaBiletClick = () => {
-    navigate("/eveniment/${evenimnet.idEveniment}/bilete");
+    // Corect: folosește backticks ` ` și numele corect al variabilei `eveniment.idEveniment`
+    navigate(`/evenimente/${eveniment.idEveniment}/selectare-bilete`); // Am actualizat calea pentru a se potrivi cu ruta anterioară
   };
 
   return (

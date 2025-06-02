@@ -1,18 +1,23 @@
-// VizualizareSala.tsx
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Loc } from "../../types/Loc";
 
 interface VizualizareSalaProps {
   structura: Loc[];
-  selectedLocuri: Map<string, Loc>;
+  locuriSelectate: Map<string, Loc>;
   onToggleLoc: (loc: Loc) => void;
   locuriBolcate: Map<string, Loc>;
 }
 
 export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
   structura,
-  selectedLocuri,
+  locuriSelectate,
   onToggleLoc,
   locuriBolcate,
 }) => {
@@ -29,36 +34,53 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
   const randuriUnice = Array.from(
     new Set(structura.map((loc) => loc.rand))
   ).sort();
-  const maxNumarPerRand: { [key: string]: number } = {};
-  structura.forEach((loc) => {
-    if (!maxNumarPerRand[loc.rand] || loc.numar > maxNumarPerRand[loc.rand]) {
-      maxNumarPerRand[loc.rand] = loc.numar;
-    }
-  });
+
+  const { offsetX, offsetY } = useMemo(() => {
+    if (structura.length === 0) return { offsetX: 0, offsetY: 0 };
+
+    let minX = Infinity;
+    let minY = Infinity;
+
+    structura.forEach((loc) => {
+      if (loc.x < minX) minX = loc.x;
+      if (loc.y < minY) minY = loc.y;
+    });
+
+    return { offsetX: minX, offsetY: minY };
+  }, [structura]);
+
+  const latimeLoc = 36;
+  const latimeLabelRand = 20;
+  const paddingContainer = 16;
 
   const checkCollision = useCallback(
     (
       selectionRect: { x1: number; y1: number; x2: number; y2: number },
-      locElement: HTMLButtonElement
+      loc: Loc
     ) => {
-      const locRect = locElement.getBoundingClientRect();
-      const salaRect = salaRef.current?.getBoundingClientRect();
+      const locDisplayX = loc.x - offsetX + latimeLabelRand + paddingContainer;
+      const locDisplayY = loc.y - offsetY + paddingContainer;
 
-      if (!salaRect) return false;
+      const locRect = {
+        left: locDisplayX,
+        top: locDisplayY,
+        width: latimeLoc,
+        height: latimeLoc,
+      };
 
-      const locX = locRect.left - salaRect.left;
-      const locY = locRect.top - salaRect.top;
-      const locWidth = locRect.width;
-      const locHeight = locRect.height;
+      const selMinX = Math.min(selectionRect.x1, selectionRect.x2);
+      const selMaxX = Math.max(selectionRect.x1, selectionRect.x2);
+      const selMinY = Math.min(selectionRect.y1, selectionRect.y2);
+      const selMaxY = Math.max(selectionRect.y1, selectionRect.y2);
 
       return (
-        locX < Math.max(selectionRect.x1, selectionRect.x2) &&
-        locX + locWidth > Math.min(selectionRect.x1, selectionRect.x2) &&
-        locY < Math.max(selectionRect.y1, selectionRect.y2) &&
-        locY + locHeight > Math.min(selectionRect.y1, selectionRect.y2)
+        locRect.left < selMaxX &&
+        locRect.left + locRect.width > selMinX &&
+        locRect.top < selMaxY &&
+        locRect.top + locRect.height > selMinY
       );
     },
-    []
+    [offsetX, offsetY, latimeLoc, latimeLabelRand, paddingContainer]
   );
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -67,9 +89,12 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
     }
     e.preventDefault();
     if (salaRef.current) {
-      const { left, top } = salaRef.current.getBoundingClientRect();
-      const startX = e.clientX - left;
-      const startY = e.clientY - top;
+      const salaDiv = salaRef.current;
+      const { left, top } = salaDiv.getBoundingClientRect();
+
+      const startX = e.clientX - left + salaDiv.scrollLeft;
+      const startY = e.clientY - top + salaDiv.scrollTop;
+
       setStartPoint({ x: startX, y: startY });
       setCurrentPoint({ x: startX, y: startY });
       setIsSelecting(true);
@@ -80,28 +105,26 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
     (e: MouseEvent) => {
       if (!isSelecting || !startPoint || !salaRef.current) return;
 
-      const { left, top } = salaRef.current.getBoundingClientRect();
-      const currentX = e.clientX - left;
-      const currentY = e.clientY - top;
+      const salaDiv = salaRef.current;
+      const { left, top } = salaDiv.getBoundingClientRect();
+
+      const currentX = e.clientX - left + salaDiv.scrollLeft;
+      const currentY = e.clientY - top + salaDiv.scrollTop;
+
       setCurrentPoint({ x: currentX, y: currentY });
     },
-    [
-      isSelecting,
-      startPoint,
-      locuriBolcate,
-      structura,
-      checkCollision,
-      selectedLocuri,
-    ]
+    [isSelecting, startPoint]
   );
 
   const handleMouseUp = useCallback(
     (e: MouseEvent) => {
       if (!isSelecting || !startPoint || !salaRef.current) return;
 
-      const { left, top } = salaRef.current.getBoundingClientRect();
-      const endX = e.clientX - left;
-      const endY = e.clientY - top;
+      const salaDiv = salaRef.current;
+      const { left, top } = salaDiv.getBoundingClientRect();
+
+      const endX = e.clientX - left + salaDiv.scrollLeft;
+      const endY = e.clientY - top + salaDiv.scrollTop;
 
       const selectionRect = {
         x1: startPoint.x,
@@ -112,17 +135,9 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
 
       const locsToToggle: Loc[] = [];
 
-      const locButtons =
-        salaRef.current.querySelectorAll<HTMLButtonElement>("[data-loc]");
-      locButtons.forEach((button) => {
-        const locKey = button.dataset.loc!;
-        const [rand, numarStr] = locKey.split("-");
-        const numar = parseInt(numarStr);
-        const loc = structura.find((l) => l.rand === rand && l.numar === numar);
-
-        if (!loc || locuriBolcate.has(locKey)) return;
-
-        if (checkCollision(selectionRect, button)) {
+      structura.forEach((loc) => {
+        const locKey = `${loc.rand}-${loc.numar}`;
+        if (!locuriBolcate.has(locKey) && checkCollision(selectionRect, loc)) {
           locsToToggle.push(loc);
         }
       });
@@ -150,7 +165,6 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
       locuriBolcate,
       structura,
       checkCollision,
-      selectedLocuri,
       onToggleLoc,
     ]
   );
@@ -188,10 +202,7 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
       onMouseDown={handleMouseDown}
       sx={{
         position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        p: 2,
+        p: paddingContainer,
         minWidth: "fit-content",
         backgroundColor: "#f5f5f5",
         borderRadius: "8px",
@@ -202,80 +213,86 @@ export const VizualizareSala: React.FC<VizualizareSalaProps> = ({
     >
       {isSelecting && startPoint && currentPoint && <Box sx={selectionStyle} />}
 
-      {randuriUnice.map((rand) => (
-        <Box key={rand} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+      {structura.map((loc) => {
+        const locKey = `${loc.rand}-${loc.numar}`;
+        const esteSelectat = locuriSelectate.has(locKey);
+        const esteBlocat = locuriBolcate.has(locKey);
+
+        return (
+          <Button
+            key={locKey}
+            data-loc={locKey}
+            variant={esteSelectat ? "contained" : "outlined"}
+            color={esteSelectat ? "primary" : "inherit"}
+            onClick={() => onToggleLoc(loc)}
+            disabled={esteBlocat}
+            sx={{
+              position: "absolute",
+              left: loc.x - offsetX + latimeLabelRand + paddingContainer,
+              top: loc.y - offsetY + paddingContainer,
+              width: latimeLoc,
+              height: latimeLoc,
+              minWidth: latimeLoc,
+              p: 0,
+              fontSize: "0.75rem",
+              backgroundColor: esteBlocat
+                ? "#bdbdbd"
+                : esteSelectat
+                ? "#1976d2"
+                : "white",
+              color: esteBlocat ? "#424242" : esteSelectat ? "white" : "black",
+              borderColor: esteBlocat
+                ? "#9e9e9e"
+                : esteSelectat
+                ? "#1976d2"
+                : "#ccc",
+              "&:hover": {
+                backgroundColor: esteBlocat
+                  ? "#bdbdbd"
+                  : esteSelectat
+                  ? "#1565c0"
+                  : "#f0f0f0",
+                borderColor: esteBlocat
+                  ? "#9e9e9e"
+                  : esteSelectat
+                  ? "#1565c0"
+                  : "#bbb",
+              },
+            }}
+          >
+            {loc.numar}
+          </Button>
+        );
+      })}
+
+      {randuriUnice.map((rand) => {
+        const primulLocDinRand = structura.find((l) => l.rand === rand);
+        if (!primulLocDinRand) return null;
+
+        return (
           <Typography
+            key={`label-${rand}`}
             variant="caption"
-            sx={{ mr: 1, minWidth: "20px", textAlign: "right" }}
+            sx={{
+              position: "absolute",
+              left: paddingContainer,
+              top:
+                primulLocDinRand.y -
+                offsetY +
+                latimeLoc / 2 -
+                8 +
+                paddingContainer,
+              width: latimeLabelRand,
+              textAlign: "right",
+              fontWeight: "bold",
+              color: "#555",
+              zIndex: 1,
+            }}
           >
             {rand}
           </Typography>
-          <Box sx={{ display: "flex", gap: "8px" }}>
-            {Array.from(
-              { length: maxNumarPerRand[rand] || 0 },
-              (_, i) => i + 1
-            ).map((numarLoc) => {
-              const loc = structura.find(
-                (l) => l.rand === rand && l.numar === numarLoc
-              );
-              const locKey = `${rand}-${numarLoc}`;
-              const esteSelectat = selectedLocuri.has(locKey);
-              const esteBlocat = locuriBolcate.has(locKey);
-
-              if (!loc) {
-                return <Box key={locKey} sx={{ width: 36, height: 36 }} />;
-              }
-
-              return (
-                <Button
-                  key={locKey}
-                  data-loc={locKey}
-                  variant={esteSelectat ? "contained" : "outlined"}
-                  color={esteSelectat ? "primary" : "inherit"}
-                  onClick={() => onToggleLoc(loc)}
-                  disabled={esteBlocat}
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    minWidth: 36,
-                    p: 0,
-                    fontSize: "0.75rem",
-                    backgroundColor: esteBlocat
-                      ? "#bdbdbd"
-                      : esteSelectat
-                      ? "#1976d2"
-                      : "white",
-                    color: esteBlocat
-                      ? "#424242"
-                      : esteSelectat
-                      ? "white"
-                      : "black",
-                    borderColor: esteBlocat
-                      ? "#9e9e9e"
-                      : esteSelectat
-                      ? "#1976d2"
-                      : "#ccc",
-                    "&:hover": {
-                      backgroundColor: esteBlocat
-                        ? "#bdbdbd"
-                        : esteSelectat
-                        ? "#1565c0"
-                        : "#f0f0f0",
-                      borderColor: esteBlocat
-                        ? "#9e9e9e"
-                        : esteSelectat
-                        ? "#1565c0"
-                        : "#bbb",
-                    },
-                  }}
-                >
-                  {loc.numar}
-                </Button>
-              );
-            })}
-          </Box>
-        </Box>
-      ))}
+        );
+      })}
     </Box>
   );
 };

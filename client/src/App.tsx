@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import { Acasa } from "./pages/Acasa";
 import { AdaugareEveniment } from "./pages/AdaugareEveniment";
 import { AdaugareSala } from "./pages/AdaugareSala";
-import SelectareBilete from "./components/componenteClient/SelectareBilete";
+import SelectareBiletePagina from "./pages/SelectareBiletePagina";
+import { SelectareLocuriPagina } from "./pages/SelectareLocuriPagina";
 
 function App() {
   return (
@@ -12,8 +13,12 @@ function App() {
       <Route path="/adauga-eveniment" element={<AdaugareEveniment />} />
       <Route path="/adauga-sala" element={<AdaugareSala />} />
       <Route
-        path="/eveniment/:idEveniment/bilete"
-        element={<SelectareBilete />}
+        path="/evenimente/:idEveniment/selectare-bilete"
+        element={<SelectareBiletePagina />}
+      />
+      <Route
+        path="evenimente/:idEveniment/selectare-locuri"
+        element={<SelectareLocuriPagina />}
       />
     </Routes>
   );

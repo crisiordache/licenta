@@ -6,9 +6,14 @@ import { EvenimenteController } from 'src/apps/api/controllers/evenimente/evenim
 import { Sala } from 'src/libs/entities/sali/sala.entity';
 import { Loc } from 'src/libs/entities/locuri/loc.entity';
 import { TipBilet } from 'src/libs/entities/tipuriBilet/tipBilet.entity';
+import { Bilet } from 'src/libs/entities/bilete/bilet.entity';
+import { TipuriBiletModule } from '../tipuriBilet/tipBilet.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Eveniment, Sala, Loc, TipBilet])],
+  imports: [
+    TypeOrmModule.forFeature([Eveniment, Sala, Loc, TipBilet, Bilet]),
+    TipuriBiletModule,
+  ],
   providers: [EvenimenteService],
   controllers: [EvenimenteController],
 })

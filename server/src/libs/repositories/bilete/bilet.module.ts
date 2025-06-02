@@ -7,5 +7,6 @@ import { BileteService } from './bilet.service';
   imports: [TypeOrmModule.forFeature([Bilet])],
   providers: [BileteService],
   controllers: [],
+  exports: [BileteService],
 })
 export class BileteModule {}

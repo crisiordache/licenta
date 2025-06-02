@@ -1,14 +1,12 @@
-export class BiletDTO {
-  idBilet: number;
-  codQR: string;
-  comandaId: number;
-  evenimentId: number;
-  tipBiletId: number;
-}
+import { Eveniment } from 'src/libs/entities/evenimente/eveniment.entity';
+import { Loc } from 'src/libs/entities/locuri/loc.entity';
+import { TipBilet } from 'src/libs/entities/tipuriBilet/tipBilet.entity';
 
 export class CreateBiletDTO {
   codQR: string;
-  comandaId: number;
-  evenimentId: number;
-  tipBiletId: number;
+  esteRezervat: boolean;
+  esteCumparat: boolean;
+  eveniment: Eveniment;
+  tipBilet: TipBilet;
+  loc?: Loc;
 }
